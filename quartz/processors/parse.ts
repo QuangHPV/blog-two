@@ -94,6 +94,16 @@ export function createFileParser(ctx: BuildCtx, fps: FilePath[]) {
         // strip leading and trailing whitespace
         file.value = file.value.toString().trim()
 
+        // Obsidian's live-preview math renderer treats a single-line "$$formula$$" as a
+        // centered display equation, but remark-math's block tokenizer only recognizes
+        // display math when the "$$" fences are alone on their own lines (like fenced
+        // code blocks) — a "$" anywhere else on the opening line makes it fall back to
+        // inline math. Rewrite single-line "$$...$$" into the 3-line form so equations
+        // written in Obsidian's convention still render centered here.
+        file.value = file.value
+          .toString()
+          .replace(/^([ \t]*)\$\$(.+)\$\$[ \t]*$/gm, (_match, indent, inner) => `${indent}$$\n${inner}\n${indent}$$`)
+
         // Text -> Text transforms
         for (const plugin of cfg.plugins.transformers.filter((p) => p.textTransform)) {
           file.value = plugin.textTransform!(ctx, file.value.toString())
