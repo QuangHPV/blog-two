@@ -7,7 +7,7 @@ configuration:
   analytics:
     provider: plausible
   locale: en-US
-  baseUrl: quanghpv.github.io/quartz
+  baseUrl: quanghpv.github.io/blog-two
   ignorePatterns:
     - private
     - templates
