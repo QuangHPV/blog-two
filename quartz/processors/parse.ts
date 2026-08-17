@@ -104,6 +104,14 @@ export function createFileParser(ctx: BuildCtx, fps: FilePath[]) {
           .toString()
           .replace(/^([ \t]*)\$\$(.+)\$\$[ \t]*$/gm, (_match, indent, inner) => `${indent}$$\n${inner}\n${indent}$$`)
 
+        // Obsidian also glues "$$" directly onto the following/preceding line for
+        // multi-line environments (e.g. "$$\begin{align}" ... "\end{align}$$"), which
+        // breaks the same fence-isolation requirement above. Split those lines apart too.
+        file.value = file.value
+          .toString()
+          .replace(/^([ \t]*)\$\$(\S[^\n]*)$/gm, (_match, indent, rest) => `${indent}$$\n${indent}${rest}`)
+          .replace(/^([ \t]*)([^\n]*\S)\$\$[ \t]*$/gm, (_match, indent, rest) => `${indent}${rest}\n${indent}$$`)
+
         // Text -> Text transforms
         for (const plugin of cfg.plugins.transformers.filter((p) => p.textTransform)) {
           file.value = plugin.textTransform!(ctx, file.value.toString())
