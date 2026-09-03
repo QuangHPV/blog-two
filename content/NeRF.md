@@ -26,5 +26,4 @@ $$\begin{align}
 Tricks
 - Positional encoding
 - Hierarchical sampling
-
-3DGS
+- 3DGS

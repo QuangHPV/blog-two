@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=./quartz/plugins/quartz-plugins.schema.json
 configuration:
-  pageTitle: Quartz 5
+  pageTitle: yapping
   pageTitleSuffix: ""
   enableSPA: true
   enablePopovers: true
@@ -115,10 +115,13 @@ plugins:
     options:
       theme: default
       mode: both
+  # Both disabled locally so `build --serve` renders drafts. The deploy
+  # workflow forces them back on, so the live site always enforces them
+  # regardless of what state this file is committed in.
   - source: "@quartz-community/remove-draft"
-    enabled: true
+    enabled: false
   - source: "@quartz-community/explicit-publish"
-    enabled: true
+    enabled: false
   - source: "@quartz-community/unlisted-pages"
     enabled: true
     options: {}

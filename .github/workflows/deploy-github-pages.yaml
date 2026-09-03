@@ -31,6 +31,23 @@ jobs:
 
       - run: npm run install-plugins
 
+      # The committed config has these off so drafts render on the local
+      # dev server. The live site must always enforce them.
+      - name: Enforce publish filters
+        run: |
+          node -e "
+          const fs = require('fs'), YAML = require('yaml');
+          const path = 'quartz.config.yaml';
+          const gated = ['@quartz-community/remove-draft', '@quartz-community/explicit-publish'];
+          const cfg = YAML.parse(fs.readFileSync(path, 'utf8'));
+          const found = cfg.plugins.filter((p) => gated.includes(p.source));
+          if (found.length !== gated.length) {
+            throw new Error('publish filter plugins missing from config: got ' + found.length + ' of ' + gated.length);
+          }
+          for (const p of found) p.enabled = true;
+          fs.writeFileSync(path, YAML.stringify(cfg));
+          "
+
       - run: npx quartz build
 
       - uses: actions/upload-pages-artifact@v3
